@@ -7,6 +7,9 @@ from .models import*
 import csv
 import datetime
 from django.http import JsonResponse
+from rest_framework.permissions import AllowAny
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 #importation des données employer
 class ImportDataEmployer(APIView):
@@ -262,10 +265,40 @@ class RepartionSexe(APIView):
         
         pourcentage_hommes = (hommes / total_employes * 100) if total_employes > 0 else 0
         pourcentage_femmes = (femmes / total_employes * 100) if total_employes > 0 else 0
-        print(f"La repartition {pourcentage_hommes}")
+        print(f"La repartition {pourcentage_hommes} %")
         data = {
             "homme": pourcentage_hommes,
             "femme": pourcentage_femmes,
         }
         return Response(data)
-#code d'historique d'importation    
+
+# s'inscire
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        if User.objects.filter(username=username).exists():
+            return Response({"message": "Le nom d'utilisateur existe déjà"}, status=400)
+        user = User.objects.create_user(username=username, password=password)
+        return Response({"message": "Creation d'utilisateur est un succés"}, satus=201)
+# Authentification
+class LoginView(APIView):
+    permision_classes = [AllowAny]
+
+    def post(self, request):
+        username = request.data.get("username")
+        password = request.data.get("password")
+
+        user = User.objects.filter(username=username).first()
+        if user is None or not user.check_password(password):
+            return Response ({"message": "Identificattion invalide"}, status=400)
+        
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        })
+  

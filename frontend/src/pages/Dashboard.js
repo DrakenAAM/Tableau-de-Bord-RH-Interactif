@@ -71,11 +71,12 @@ function Dashboard() {
             </div>
           </div>
           <div style={{ width: '400px', height: '400px'}}>
-            <div style={{ float: 'left'}}>
-              <h2>Répartition Hommes et Femmes</h2>
+          <div>
+          <div style={{ float: 'left'}}>
+              <h2>Répartition entre Hommes et Femmes</h2>
               <Pie data={pieData} />
-              
             </div>
+          </div>
           </div>
         </div>
       </Box>

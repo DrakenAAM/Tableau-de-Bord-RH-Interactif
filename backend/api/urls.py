@@ -9,5 +9,7 @@ urlpatterns=[
     path('upload_debauches/', ImportDataDebauche.as_view(), name='file-debauche-upload'),
     path('debauches/', DebaucheListView.as_view(), name='debauche-list'),
     path('effectifs/', TotalsEffectifView.as_view(), name="effectifs"),
-    path('repartition/', RepartionSexe.as_view(), name="Repartition-sexe")
+    path('repartition/', RepartionSexe.as_view(), name="Repartition-sexe"),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login')
 ]
