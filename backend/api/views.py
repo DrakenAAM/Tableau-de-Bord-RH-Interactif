@@ -10,6 +10,8 @@ from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
 #importation des données employer
 class ImportDataEmployer(APIView):
@@ -301,4 +303,37 @@ class LoginView(APIView):
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         })
-  
+# liste des utilisateur
+class UserListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        users = User.objects.all()
+        data = [
+            {
+                "id": user.id,
+                "username": user.username,
+                "is_staff": user.is_staff,
+                "last_login": user.last_login
+            }
+            for user in users
+        ]
+        print(data)
+        return Response(data, status=status.HTTP_200_OK)
+
+    def delete(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            user.delete()
+            return Response({"message": "Utilisateur supprimé avec succès"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"message": "Utilisateur introuvable"}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            user.is_staff = request.data.get("is_staff", user.is_staff)
+            user.save()
+            return Response({"message": "Utilisateur mis à jour avec succès"}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({"message": "Utilisateur introuvable"}, status=status.HTTP_404_NOT_FOUND)

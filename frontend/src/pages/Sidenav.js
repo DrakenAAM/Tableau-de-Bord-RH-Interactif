@@ -15,9 +15,10 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import PersonIcon from '@mui/icons-material/Person';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import PersonIcon from '@mui/icons-material/Person';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import BadgeIcon from '@mui/icons-material/Badge';
 import Dashboard from './Dashboard';
@@ -27,6 +28,8 @@ import Debauches from './Debauches';
 import PageImport from './PageImport';
 import logo from '../icons/orange.png';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Avatar, MenuItem, Menu, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
+//import { Link} from 'react-router-dom';
 
 
 
@@ -114,10 +117,32 @@ export default function Sidenav() {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const [menudata, setMenuData] = useState("Dashboard");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(null)
 
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const handleProfileMenuOpen = (event) =>{
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  const closeLogoutDialog = () => {
+    setLogoutDialogOpen(false);
+  };
+
+  const confirmLogout = () => {
+    setLogoutDialogOpen(false);
+    window.location.href = '/';
+  }
 
   return (
     <>
@@ -136,6 +161,15 @@ export default function Sidenav() {
           <Typography variant="h5" noWrap component="div">
           <img src={logo} alt="logo" style={{ width: '24px', height: '24px' }} /> Tableau de Bord RH
           </Typography>
+          <IconButton color='inherit' aria-label='profile' onClick={handleProfileMenuOpen}>
+            <Avatar>
+              <AccountCircleIcon/>
+            </Avatar>
+          </IconButton>
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose}>
+            <MenuItem onClick={handleProfileMenuClose}>Profil</MenuItem>
+            <MenuItem onClick={handleLogoutClick}> <ExitToAppIcon sx={{mr:1}}/>Déconnexion</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open} sx={{ "& .MuiDrawer-paper": {backgroundColor: "rgb(89,89,89)", color:"rgb(255,121,0)"},}}>
@@ -189,6 +223,7 @@ export default function Sidenav() {
             </ListItem>
         </List>
       </Drawer>
+
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
             {menudata === "Dashboard" && <Dashboard />}
             {menudata === "Employes" && <Employes />}
@@ -196,6 +231,27 @@ export default function Sidenav() {
             {menudata === "Debauches" && <Debauches/>}
             {menudata === "PageImport" && <PageImport/>}
       </Box>
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={closeLogoutDialog}
+        aria-labelledby='logout-dialog-title'
+        arial-describedly='logout-dialog-description'
+        >
+          <DialogTitle id= 'logout-dialog-title'>Confirmation</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Voulez vous deconnecter
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeLogoutDialog} color='primary'>
+                Annuler
+            </Button>
+            <Button onClick={confirmLogout} color='error' autoFocus>
+                Deconnexion
+            </Button>
+          </DialogActions>
+      </Dialog>
     </Box>
     </>
   );

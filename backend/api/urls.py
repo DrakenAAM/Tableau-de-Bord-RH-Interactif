@@ -11,5 +11,7 @@ urlpatterns=[
     path('effectifs/', TotalsEffectifView.as_view(), name="effectifs"),
     path('repartition/', RepartionSexe.as_view(), name="Repartition-sexe"),
     path('register/', RegisterView.as_view(), name='register'),
-    path('login/', LoginView.as_view(), name='login')
+    path('login/', LoginView.as_view(), name='login'),
+    path('users/', UserListView.as_view(), name='user-list'),
+    path('users/<int:user_id>/', UserListView.as_view(), name='user-detail'),
 ]
