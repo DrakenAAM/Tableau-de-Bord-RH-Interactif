@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -49,35 +50,69 @@ function Dashboard() {
     <>
       <Box>
         <div style={{ padding: '20px' }}>
-          <h1 style={{ color: 'orange' }}>Dashboard</h1>
+          <h1 style={{ color: 'orange', textAlign: 'center' }}>Dashboard</h1>
+          
+          {/* Cards des totaux */}
           <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
-            <div style={{ textAlign: 'center' }}>
+            <Paper
+              elevation={3}
+              style={{
+                backgroundColor: '#FFCCCB',
+                color: '#333',
+                textAlign: 'center',
+                padding: '20px',
+                flex: '1',
+                margin: '10px',
+              }}
+            >
               <h2>Employés</h2>
-              <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'orange' }}>
-                {totals.total_employes}
-              </p>
-            </div>
-            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{totals.total_employes}</p>
+            </Paper>
+            <Paper
+              elevation={3}
+              style={{
+                backgroundColor: '#D4EDDA',
+                color: '#333',
+                textAlign: 'center',
+                padding: '20px',
+                flex: '1',
+                margin: '10px',
+              }}
+            >
               <h2>Embauches</h2>
-              <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'orange' }}>
-                {totals.total_embauches}
-              </p>
-            </div>
-            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{totals.total_embauches}</p>
+            </Paper>
+            <Paper
+              elevation={3}
+              style={{
+                backgroundColor: '#FFF3CD',
+                color: '#333',
+                textAlign: 'center',
+                padding: '20px',
+                flex: '1',
+                margin: '10px',
+              }}
+            >
               <h2>Débauches</h2>
-              <p style={{ fontSize: '24px', fontWeight: 'bold', color: 'orange' }}>
-                {totals.total_debauches}
-              </p>
-            </div>
+              <p style={{ fontSize: '24px', fontWeight: 'bold' }}>{totals.total_debauches}</p>
+            </Paper>
           </div>
-          <div style={{ width: '400px', height: '400px'}}>
-          <div>
-          <div style={{ float: 'left'}}>
-              <h2>Répartition entre Hommes et Femmes</h2>
+
+          {/* Card pour le graphique */}
+          <Paper
+            elevation={3}
+            style={{
+              backgroundColor: 'white',
+              padding: '20px',
+              marginTop: '20px',
+              textAlign: 'center',
+            }}
+          >
+            <h2 style={{ color: 'orange' }}>Répartition entre Hommes et Femmes</h2>
+            <div style={{ width: '400px', height: '400px', margin: '0 auto' }}>
               <Pie data={pieData} />
             </div>
-          </div>
-          </div>
+          </Paper>
         </div>
       </Box>
     </>

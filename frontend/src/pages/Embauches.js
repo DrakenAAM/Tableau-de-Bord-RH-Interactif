@@ -12,12 +12,13 @@ import {
   TextField,
   TablePagination,
 } from '@mui/material';
+import { frFR } from '@mui/material/locale'; // Pour traduire en français
+import { createTheme, ThemeProvider } from '@mui/material/styles'; // Thème personnalisé
 
 const Employer = () => {
   const [employer, setEmployer] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [matriculeFilter, setMatriculeFilter] = useState('');
   const [page, setPage] = useState(0); // Page actuelle
   const [rowsPerPage, setRowsPerPage] = useState(5); // Nombre de lignes par page
 
@@ -47,17 +48,6 @@ const Employer = () => {
     setPage(0); // Réinitialiser à la première page après un filtrage
   };
 
-  // Fonction pour gérer le filtre spécifique par matricule
-  const handleMatriculeFilter = (event) => {
-    const value = event.target.value.toLowerCase();
-    setMatriculeFilter(value);
-    const filtered = employer.filter((item) =>
-      item.matricule && item.matricule.toLowerCase().includes(value)
-    );
-    setFilteredData(filtered);
-    setPage(0); // Réinitialiser à la première page après un filtrage
-  };
-
   // Gérer le changement de page
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -75,8 +65,11 @@ const Employer = () => {
     page * rowsPerPage + rowsPerPage
   );
 
+  // Créer un thème personnalisé pour la pagination en français
+  const theme = createTheme(frFR);
+
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <Box>
         <div style={{ padding: '20px' }}>
           <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
@@ -90,13 +83,15 @@ const Employer = () => {
                 fullWidth
                 value={searchTerm}
                 onChange={handleSearch}
-              />
-              <TextField
-                label="Filtrer par Matricule"
-                variant="outlined"
-                fullWidth
-                value={matriculeFilter}
-                onChange={handleMatriculeFilter}
+                sx={{
+                  input: { color: 'orange' },
+                  label: { color: 'orange' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'orange' },
+                    '&:hover fieldset': { borderColor: 'orange' },
+                    '&.Mui-focused fieldset': { borderColor: 'orange' },
+                  },
+                }}
               />
             </Box>
 
@@ -162,11 +157,12 @@ const Employer = () => {
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage="Lignes par page :"
             />
           </Paper>
         </div>
       </Box>
-    </>
+    </ThemeProvider>
   );
 };
 
