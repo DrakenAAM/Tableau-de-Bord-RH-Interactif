@@ -285,7 +285,7 @@ class RegisterView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({"message": "Le nom d'utilisateur existe déjà"}, status=400)
         user = User.objects.create_user(username=username, password=password)
-        return Response({"message": "Creation d'utilisateur est un succés"}, satus=201)
+        return Response({"message": "Creation d'utilisateur est un succés"}, status=201)
 # Authentification
 class LoginView(APIView):
     permision_classes = [AllowAny]
