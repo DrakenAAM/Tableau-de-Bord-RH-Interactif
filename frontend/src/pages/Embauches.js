@@ -1,67 +1,173 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination, Paper, IconButton, Box, Typography, Modal, Button, TextField,
-Dialog, DialogActions, DialogContent, DialogTitle} from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Box,
+  TextField,
+  TablePagination,
+} from '@mui/material';
 
 const Employer = () => {
-    const [employer, setEmployer] = useState([]);
+  const [employer, setEmployer] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [matriculeFilter, setMatriculeFilter] = useState('');
+  const [page, setPage] = useState(0); // Page actuelle
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Nombre de lignes par page
 
-    useEffect(() => {
-        axios.get('http://localhost:8000/api/embauches/')
-        .then(response => setEmployer(response.data))
-        .catch(error => console.error("Erreur lors de la recuperation des données", error))
-    }, []);
+  // Récupérer les données du backend
+  useEffect(() => {
+    axios
+      .get('http://localhost:8000/api/embauches/')
+      .then((response) => {
+        setEmployer(response.data);
+        setFilteredData(response.data); // Initialiser les données filtrées avec toutes les données
+      })
+      .catch((error) =>
+        console.error('Erreur lors de la récupération des données', error)
+      );
+  }, []);
 
-    return (
-        <Paper elevation={3}
-        sx={{marginBottom: 5}}>
-            <h2>Liste des Embauches</h2>
-            <TableContainer component={Paper} sx={{ maxHeight: 800, overflowY: 'auto', overflowX: 'auto' }}>
-                <Table>
+  // Fonction pour gérer la recherche en temps réel (toutes les colonnes)
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+    const filtered = employer.filter((item) =>
+      Object.values(item).some(
+        (val) => val && val.toString().toLowerCase().includes(value)
+      )
+    );
+    setFilteredData(filtered);
+    setPage(0); // Réinitialiser à la première page après un filtrage
+  };
+
+  // Fonction pour gérer le filtre spécifique par matricule
+  const handleMatriculeFilter = (event) => {
+    const value = event.target.value.toLowerCase();
+    setMatriculeFilter(value);
+    const filtered = employer.filter((item) =>
+      item.matricule && item.matricule.toLowerCase().includes(value)
+    );
+    setFilteredData(filtered);
+    setPage(0); // Réinitialiser à la première page après un filtrage
+  };
+
+  // Gérer le changement de page
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  // Gérer le changement du nombre de lignes par page
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Réinitialiser à la première page
+  };
+
+  // Déterminer les données à afficher sur la page actuelle
+  const paginatedData = filteredData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  return (
+    <>
+      <Box>
+        <div style={{ padding: '20px' }}>
+          <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
+            <h1 style={{ color: 'orange' }}>Liste des Embauches</h1>
+
+            {/* Champs de recherche */}
+            <Box display="flex" gap={2} marginBottom={2}>
+              <TextField
+                label="Recherche générale"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+              <TextField
+                label="Filtrer par Matricule"
+                variant="outlined"
+                fullWidth
+                value={matriculeFilter}
+                onChange={handleMatriculeFilter}
+              />
+            </Box>
+
+            {/* Tableau */}
+            <TableContainer
+              component={Paper}
+              sx={{ maxHeight: 800, overflowY: 'auto', overflowX: 'auto' }}
+            >
+              <Table>
                 <TableHead>
-                    <TableRow>
-                        <TableCell>Matricule</TableCell>
-                        <TableCell>Trigramme</TableCell>
-                        <TableCell>Sexe</TableCell>
-                        <TableCell>Date d'embauche</TableCell>
-                        <TableCell>Contrat</TableCell>
-                        <TableCell>Date de naissance</TableCell>
-                        <TableCell>Age</TableCell>
-                        <TableCell>Direction</TableCell>
-                        <TableCell>Classification</TableCell>
-                        <TableCell>Metier</TableCell>
-                        <TableCell>Villes</TableCell>
-                        <TableCell>Entités</TableCell>
-                        <TableCell>Observation</TableCell>
-                    </TableRow>
+                  <TableRow>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Matricule</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Trigramme</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Sexe</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      Date d'embauche
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Contrat</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      Date de naissance
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Age</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Direction</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      Classification
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Métier</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Villes</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Entités</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>
+                      Observation
+                    </TableCell>
+                  </TableRow>
                 </TableHead>
                 <TableBody>
-                    {
-                        employer.map((item, index) => {
-                            return (
-                                <TableRow key={index}>
-                                    <TableCell>{item.matricule}</TableCell>
-                                    <TableCell>{item.trigramme}</TableCell>
-                                    <TableCell>{item.sexe}</TableCell>
-                                    <TableCell>{item.embauche}</TableCell>
-                                    <TableCell>{item.contrat}</TableCell>
-                                    <TableCell>{item.naissance}</TableCell>
-                                    <TableCell>{item.age}</TableCell>
-                                    <TableCell>{item.direction}</TableCell>
-                                    <TableCell>{item.classification}</TableCell>
-                                    <TableCell>{item.metier}</TableCell>
-                                    <TableCell>{item.ville}</TableCell>
-                                    <TableCell>{item.entite}</TableCell>
-                                    <TableCell>{item.observation}</TableCell>
-                                </TableRow>
-                            )
-                        })
-                    }
+                  {paginatedData.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.matricule}</TableCell>
+                      <TableCell>{item.trigramme}</TableCell>
+                      <TableCell>{item.sexe}</TableCell>
+                      <TableCell>{item.embauche}</TableCell>
+                      <TableCell>{item.contrat}</TableCell>
+                      <TableCell>{item.naissance}</TableCell>
+                      <TableCell>{item.age}</TableCell>
+                      <TableCell>{item.direction}</TableCell>
+                      <TableCell>{item.classification}</TableCell>
+                      <TableCell>{item.metier}</TableCell>
+                      <TableCell>{item.ville}</TableCell>
+                      <TableCell>{item.entite}</TableCell>
+                      <TableCell>{item.observation}</TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
-                </Table>
+              </Table>
             </TableContainer>
-        </Paper>
-    );
+
+            {/* Pagination */}
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 15]}
+              component="div"
+              count={filteredData.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Paper>
+        </div>
+      </Box>
+    </>
+  );
 };
 
 export default Employer;
