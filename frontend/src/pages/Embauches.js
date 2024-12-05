@@ -69,11 +69,12 @@ const Employer = () => {
   const theme = createTheme(frFR);
 
   return (
+    <Box>
+      <div style={{ padding: '20px' }}>
     <ThemeProvider theme={theme}>
-      <Box>
-        <div style={{ padding: '20px' }}>
+      
           <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
-            <h1 style={{ color: 'orange' }}>Liste des Embauches</h1>
+            <h1 style={{ color: 'orange' }}>Liste des embauches</h1>
 
             {/* Champs de recherche */}
             <Box display="flex" gap={2} marginBottom={2}>
@@ -160,9 +161,11 @@ const Employer = () => {
               labelRowsPerPage="Lignes par page :"
             />
           </Paper>
-        </div>
-      </Box>
+        
+      
     </ThemeProvider>
+    </div>
+    </Box>
   );
 };
 
