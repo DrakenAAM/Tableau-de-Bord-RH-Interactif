@@ -29,6 +29,7 @@ import PageImport from './PageImport';
 import Historique from './Historique'
 import logo from '../icons/orange.png';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import HistoryIcon from '@mui/icons-material/History';
 import { Avatar, MenuItem, Menu, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
 //import { Link} from 'react-router-dom';
 
@@ -150,28 +151,32 @@ export default function Sidenav() {
       <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" sx={{ backgroundColor: "rgb(0,0,0)", color:"rgb(255,121,0)"}}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={()=>{setOpen(!open)}}
-            edge="start"
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h5" noWrap component="div">
-          <img src={logo} alt="logo" style={{ width: '24px', height: '24px' }} /> Tableau de Bord RH
-          </Typography>
-          <IconButton color='inherit' aria-label='profile' onClick={handleProfileMenuOpen}>
-            <Avatar>
-              <AccountCircleIcon/>
-            </Avatar>
-          </IconButton>
-          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose}>
-            <MenuItem onClick={handleProfileMenuClose}>Profil</MenuItem>
-            <MenuItem onClick={handleLogoutClick}> <ExitToAppIcon sx={{mr:1}}/>Déconnexion</MenuItem>
-          </Menu>
-        </Toolbar>
+      <Toolbar>
+  <IconButton
+    color="inherit"
+    aria-label="open drawer"
+    onClick={() => setOpen(!open)}
+    edge="start"
+  >
+    <MenuIcon />
+  </IconButton>
+  <Typography variant="h5" noWrap component="div" sx={{ flexGrow: 1 }}>
+    <img src={logo} alt="logo" style={{ width: '24px', height: '24px' }} /> Tableau de Bord RH
+  </Typography>
+  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <IconButton color="inherit" aria-label="profile" onClick={handleProfileMenuOpen}>
+      <Avatar>
+        <AccountCircleIcon />
+      </Avatar>
+    </IconButton>
+  </Box>
+  <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose}>
+    <MenuItem onClick={handleProfileMenuClose}>Profil</MenuItem>
+    <MenuItem onClick={handleLogoutClick}>
+      <ExitToAppIcon sx={{ mr: 1 }} /> Déconnexion
+    </MenuItem>
+  </Menu>
+</Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open} sx={{ "& .MuiDrawer-paper": {backgroundColor: "rgb(89,89,89)", color:"rgb(255,121,0)"},}}>
         <DrawerHeader >
@@ -182,22 +187,28 @@ export default function Sidenav() {
         <Divider />
         <Divider />
         <List >
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Dashboard")}>
-                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <DashboardIcon sx={{ color:"rgb(255,121,0)"}}/>
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Employes")}>
-                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <PersonIcon sx={{ color:"rgb(255,121,0)"}}/>
-                </ListItemIcon>
-                <ListItemText primary="Employés" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
-              </ListItemButton>
-            </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+    <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Dashboard")}>
+      <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
+        <DashboardIcon sx={{ color:"rgb(255,121,0)"}}/>
+      </ListItemIcon>
+      <ListItemText 
+        primary="Dashboard" 
+        sx={[open? {opacity: 1, fontWeight: 'bold'}: {opacity: 0, fontWeight: 'bold'},]} 
+      />
+    </ListItemButton>
+  </ListItem>
+  <ListItem disablePadding sx={{ display: 'block' }}>
+    <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Employes")}>
+      <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
+        <PersonIcon sx={{ color:"rgb(255,121,0)"}}/>
+      </ListItemIcon>
+      <ListItemText 
+        primary="Employés" 
+        sx={[open? {opacity: 1, fontWeight: 'bold'}: {opacity: 0, fontWeight: 'bold'},]} 
+      />
+    </ListItemButton>
+  </ListItem>
             <ListItem disablePadding sx={{ display: 'block' }}>
               <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Embauches")}>
                 <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
@@ -225,9 +236,9 @@ export default function Sidenav() {
             <ListItem disablePadding sx={{ display: 'block' }}>
               <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Historique")}>
                 <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <CloudUploadIcon sx={{ color:"rgb(255,121,0)"}}/>
+                <HistoryIcon sx={{ color:"rgb(255,121,0)"}}/>
                 </ListItemIcon>
-                <ListItemText primary="Historique d'importations" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
+                <ListItemText primary="Historiques" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
               </ListItemButton>
             </ListItem>
         </List>
