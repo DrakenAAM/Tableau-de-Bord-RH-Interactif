@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Employer(models.Model):
@@ -55,20 +56,13 @@ class Debauche(models.Model):
     def __str__(self):
         return f"{self.matricule} - {self.trigramme}"
     
-    """class historique_importation(models.Model):
-        STATUT_CHOICES =[
-            ('SUCCES', 'Succès'),
-            ('ECHEC', 'Echec')
-        ]
+class ImportHistory(models.Model):
+    file_name = models.CharField(max_length=255)  # Nom du fichier importé
+    import_type = models.CharField(max_length=50)  # Type de données : Employer, Embauche, Débauche
+    imported_by = models.ForeignKey(User, on_delete=models.CASCADE)  # Utilisateur ayant importé le fichier
+    import_date = models.DateTimeField(auto_now_add=True)  # Date d'importation
+    success = models.BooleanField(default=True) # Indique si l'importation a réussi
 
-        date_importation = models.DateTimeField(auto_now_add=True)
-        utilisateur = models.ForeignKey(User), null=True, on_delete=models.SET_NULL)
-        fichier_nom = models.CharField(max_length=100)
-        statut = models.CharField(max_length=10, choices=STATUS_CHOICES)
-        message_erreur = models.TextField(blank=True, null=True)
-        nb_saved_add = models.IntegerField(default=0)
-        nb_saved_edit = models.IntegerField(default=0)
-        duree_importation = models.DurationField(blank=True, null=True)
+    def __str__(self):
+        return f"{self.import_type} - {self.file_name} by {self.imported_by.username}"
 
-        def __str__(self):
-            return f"Importation du {self.date_importation} - Statut : {self.statut}"""

@@ -68,31 +68,31 @@ const Employer = () => {
 
     return (
         <Box>
-      <div style={{ padding: '20px' }}>
-    <ThemeProvider theme={theme}>
+          <div style={{ padding: '20px' }}>
+            <ThemeProvider theme={theme}>
       
-          <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
-            <h1 style={{ color: 'orange' }}>Liste des débauches</h1>
+              <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
+                <h1 style={{ color: 'orange' }}>Liste des débauches</h1>
 
-            {/* Champs de recherche */}
-            <Box display="flex" gap={2} marginBottom={2}>
-              <TextField
-                label="Recherche multicritères"
-                variant="outlined"
-                fullWidth
-                value={searchTerm}
-                onChange={handleSearch}
-                sx={{
-                  input: { color: 'orange' },
-                  label: { color: 'orange' },
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: 'orange' },
-                    '&:hover fieldset': { borderColor: 'orange' },
-                    '&.Mui-focused fieldset': { borderColor: 'orange' },
-                  },
-                }}
-              />
-            </Box>
+                   {/* Champs de recherche */}
+                  <Box display="flex" gap={2} marginBottom={2}  padding={'20px'}>
+                    <TextField
+                      label="Recherche multicritères"
+                      variant="outlined"
+                      fullWidth
+                      value={searchTerm}
+                      onChange={handleSearch}
+                      sx={{
+                        input: { color: 'orange' },
+                        label: { color: 'orange' },
+                        '& .MuiOutlinedInput-root': {
+                          '& fieldset': { borderColor: 'orange' },
+                          '&:hover fieldset': { borderColor: 'orange' },
+                          '&.Mui-focused fieldset': { borderColor: 'orange' },
+                        },
+                      }}
+                    />
+                  </Box>
 
             {/* Tableau */}
             <TableContainer

@@ -79,7 +79,7 @@ const Employer = () => {
             {/* Champs de recherche */}
             <Box display="flex" gap={2} marginBottom={2}>
               <TextField
-                label="Recherche générale"
+                label="Recherche multicritères"
                 variant="outlined"
                 fullWidth
                 value={searchTerm}

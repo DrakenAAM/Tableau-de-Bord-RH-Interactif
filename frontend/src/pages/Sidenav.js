@@ -26,6 +26,7 @@ import Employes from './Employes';
 import Embauches from './Embauches';
 import Debauches from './Debauches';
 import PageImport from './PageImport';
+import Historique from './Historique'
 import logo from '../icons/orange.png';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Avatar, MenuItem, Menu, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from '@mui/material';
@@ -221,6 +222,14 @@ export default function Sidenav() {
                 <ListItemText primary="Importer des données" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
               </ListItemButton>
             </ListItem>
+            <ListItem disablePadding sx={{ display: 'block' }}>
+              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Historique")}>
+                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
+                <CloudUploadIcon sx={{ color:"rgb(255,121,0)"}}/>
+                </ListItemIcon>
+                <ListItemText primary="Historique d'importations" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
+              </ListItemButton>
+            </ListItem>
         </List>
       </Drawer>
 
@@ -230,6 +239,7 @@ export default function Sidenav() {
             {menudata === "Embauches" && <Embauches/>}
             {menudata === "Debauches" && <Debauches/>}
             {menudata === "PageImport" && <PageImport/>}
+            {menudata === "Historique" && <Historique/>}
       </Box>
       <Dialog
         open={logoutDialogOpen}

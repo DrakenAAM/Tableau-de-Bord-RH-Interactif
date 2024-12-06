@@ -20,9 +20,10 @@ class ImportDataEmployer(APIView):
         
     def post(self, request, *args, **kwargs):
         file = request.FILES.get('file')
+        user = request.user # L'utilisateur connecté
         print("Fichier reçu")
         if not file:
-            print("Erreur: Aucun fichier reçu")
+            print("Le fichier n'a pas été importé")
             return Response({"error": "Le fichier n'a pas été impotré"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -70,6 +71,13 @@ class ImportDataEmployer(APIView):
                      )
                 employer.save()
                 print(f"Data employer sauvegardée : {matricule}, {trigramme}")
+              # Enregistrement dans l'historique
+            ImportHistory.objects.create(
+                file_name=file.name,
+                import_type="Employer",
+                imported_by=user,
+                success=True,
+            )
             return Response({"message": "Fichier traité avec succees"}, status=status.HTTP_201_CREATED)
 
         except IndexError:
@@ -337,3 +345,17 @@ class UserListView(APIView):
             return Response({"message": "Utilisateur mis à jour avec succès"}, status=status.HTTP_200_OK)
         except User.DoesNotExist:
             return Response({"message": "Utilisateur introuvable"}, status=status.HTTP_404_NOT_FOUND)
+class ImportHistoryView(APIView):
+    def get(self, request, *args, **kwargs):
+        history = ImportHistory.objects.all().order_by('-import_date')
+        data = [
+            {
+                "file_name": record.file_name,
+                "import_type": record.import_type,
+                "imported_by": record.imported_by.username,
+                "import_date": record.import_date.strftime("%Y-%m-%d %H:%M:%S"),
+                "success": record.success,
+            }
+            for record in history
+        ]
+        return Response(data)
