@@ -15,6 +15,7 @@ import {
 import { frFR } from '@mui/material/locale'; // Pour traduire en français
 import { createTheme, ThemeProvider } from '@mui/material/styles'; // Thème personnalisé
 
+
 const Employer = () => {
   const [employer, setEmployer] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -22,13 +23,13 @@ const Employer = () => {
   const [page, setPage] = useState(0); // Page actuelle
   const [rowsPerPage, setRowsPerPage] = useState(5); // Nombre de lignes par page
 
-  // Récupérer les données du backend
+
   useEffect(() => {
-  const token = localStorage.getItem('authToken'); // Supposons que le token est stocké dans localStorage
+  const token = localStorage.getItem('authToken'); 
   axios
     .get('http://localhost:8000/api/employers/', {
       headers: {
-        Authorization: `Bearer ${token}`, // Incluez le token ici
+        Authorization: `Bearer ${token}`, 
       },
     })
     .then((response) => {

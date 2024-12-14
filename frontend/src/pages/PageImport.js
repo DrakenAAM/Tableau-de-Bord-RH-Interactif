@@ -31,6 +31,15 @@ function PageImport() {
     // Fonction pour gérer l'importation du fichier
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const token = localStorage.getItem('token');
+        
+        // Vérification de la présence du token
+        if (!token) {
+            setMessage({ type: 'error', text: 'Vous devez être connecté pour importer des données.' });
+            setOpenSnackbar(true);
+            return;
+        }
+
         if (!file) {
             setMessage({ type: 'error', text: "Veuillez sélectionner un fichier à importer." });
             setOpenSnackbar(true);
@@ -46,7 +55,7 @@ function PageImport() {
             await axios.post(uploadUrl, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Ajouter le token si nécessaire
+                    'Authorization': `Bearer ${token}`,  // Ajout du token pour l'autorisation
                 },
             });
             setLoading(false);
@@ -55,7 +64,11 @@ function PageImport() {
             handleCloseModal(); // Fermer le modal après l'importation réussie
         } catch (error) {
             setLoading(false);
-            setMessage({ type: 'error', text: "Erreur lors de l'importation du fichier." });
+            if (error.response && error.response.status === 401) {
+                setMessage({ type: 'error', text: "Votre session a expiré. Veuillez vous reconnecter." });
+            } else {
+                setMessage({ type: 'error', text: "Erreur lors de l'importation du fichier." });
+            }
             setOpenSnackbar(true);
         }
     };
