@@ -24,16 +24,24 @@ const Employer = () => {
 
   // Récupérer les données du backend
   useEffect(() => {
-    axios
-      .get('http://localhost:8000/api/employers/')
-      .then((response) => {
-        setEmployer(response.data);
-        setFilteredData(response.data); // Initialiser les données filtrées avec toutes les données
-      })
-      .catch((error) =>
-        console.error('Erreur lors de la récupération des données', error)
-      );
-  }, []);
+  const token = localStorage.getItem('authToken'); // Supposons que le token est stocké dans localStorage
+  axios
+    .get('http://localhost:8000/api/employers/', {
+      headers: {
+        Authorization: `Bearer ${token}`, // Incluez le token ici
+      },
+    })
+    .then((response) => {
+      setEmployer(response.data);
+      setFilteredData(response.data);
+    })
+    .catch((error) => {
+      console.error('Erreur lors de la récupération des données', error);
+      if (error.response && error.response.status === 403) {
+        alert("Vous n'êtes pas autorisé à accéder à cette ressource. Veuillez vous authentifier.");
+      }
+    });
+}, []);
 
   // Fonction pour gérer la recherche en temps réel (toutes les colonnes)
   const handleSearch = (event) => {

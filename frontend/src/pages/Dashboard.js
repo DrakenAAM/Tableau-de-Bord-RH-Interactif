@@ -4,6 +4,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearSca
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import CountUp from 'react-countup';
+import BadgeIcon from '@mui/icons-material/Badge';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -25,20 +27,20 @@ function Dashboard() {
     datasets: [
       {
         data: [sexeData.homme, sexeData.femme],
-        backgroundColor: ['#36A2EB', '#FF6384'],
-        hoverBackgroundColor: ['#36A2EB', '#FF6384'],
+        backgroundColor: ['rgb(75,180,230)', 'rgb(255,180,230)'],
+        hoverBackgroundColor: ['rgb(75,180,230)', 'rgb(255,180,230)'],
       },
     ],
   };
 
   // Données pour le graphique en barres
   const barData = {
-    labels: ['Embauches', 'Débauches'],
+    labels: ['Entrées', 'Sorties'],
     datasets: [
       {
-        label: 'Comparaison Embauche/Débauche',
+        label: 'Comparaison Entrées/Sorties',
         data: [totals.total_embauches, totals.total_debauches],
-        backgroundColor: ['#36A2EB', '#FF6384'],
+        backgroundColor: ['rgb(80,190,135)', 'rgb(145,100,205)'],
       },
     ],
   };
@@ -76,7 +78,7 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2>Employés</h2>
+              <h2> <GroupsIcon/> Total des employés actuel</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_employes} duration={1.5} />
               </p>
@@ -92,7 +94,8 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2>Embauches</h2>
+              
+              <h2> <BadgeIcon/> Embauchés</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_embauches} duration={1.5} />
               </p>
@@ -108,7 +111,7 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2>Débauches</h2>
+              <h2>Débauchés</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_debauches} duration={1.5} />
               </p>

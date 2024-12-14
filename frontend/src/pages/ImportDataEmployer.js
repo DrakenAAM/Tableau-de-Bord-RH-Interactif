@@ -31,6 +31,7 @@ const ImportFichier = () => {
             await axios.post("http://localhost:8000/api/upload_employers/", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Ajouter le token
                 },
             });
             setLoading(false);

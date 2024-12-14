@@ -75,7 +75,7 @@ class ImportDataEmployer(APIView):
             ImportHistory.objects.create(
                 file_name=file.name,
                 import_type="Employer",
-                imported_by=user,
+                imported_by=request.user,
                 success=True,
             )
             return Response({"message": "Fichier traité avec succees"}, status=status.HTTP_201_CREATED)

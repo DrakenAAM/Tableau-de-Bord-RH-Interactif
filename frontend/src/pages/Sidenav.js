@@ -188,59 +188,149 @@ export default function Sidenav() {
         <Divider />
         <List >
         <ListItem disablePadding sx={{ display: 'block' }}>
-    <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Dashboard")}>
-      <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-        <DashboardIcon sx={{ color:"rgb(255,121,0)"}}/>
-      </ListItemIcon>
-      <ListItemText 
-        primary="Dashboard" 
-        sx={[open? {opacity: 1, fontWeight: 'bold'}: {opacity: 0, fontWeight: 'bold'},]} 
-      />
-    </ListItemButton>
-  </ListItem>
-  <ListItem disablePadding sx={{ display: 'block' }}>
-    <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Employes")}>
-      <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-        <PersonIcon sx={{ color:"rgb(255,121,0)"}}/>
-      </ListItemIcon>
-      <ListItemText 
-        primary="Employés" 
-        sx={[open? {opacity: 1, fontWeight: 'bold'}: {opacity: 0, fontWeight: 'bold'},]} 
-      />
-    </ListItemButton>
-  </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Embauches")}>
-                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <BadgeIcon sx={{ color:"rgb(255,121,0)"}}/>
-                </ListItemIcon>
-                <ListItemText primary="Embauches" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Debauches")}>
-                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <ExitToAppIcon sx={{ color:"rgb(255,121,0)"}}/>
-                </ListItemIcon>
-                <ListItemText primary="Debauches" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("PageImport")}>
-                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <CloudUploadIcon sx={{ color:"rgb(255,121,0)"}}/>
-                </ListItemIcon>
-                <ListItemText primary="Importer des données" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={{ display: 'block' }}>
-              <ListItemButton sx={[{minHeight: 48,px: 2.5,},open ? {justifyContent: 'initial',}: {justifyContent: 'center',},]} onClick={()=>setMenuData("Historique")}>
-                <ListItemIcon sx={[{minWidth: 0,justifyContent: 'center',},open ? {mr: 3,}: {mr: 'auto',},]}>
-                <HistoryIcon sx={{ color:"rgb(255,121,0)"}}/>
-                </ListItemIcon>
-                <ListItemText primary="Historiques" sx={[open? {opacity: 1,}: {opacity: 0,},]} />
-              </ListItemButton>
-            </ListItem>
+          <ListItemButton
+            sx={[
+            { minHeight: 48, px: 2.5 },
+            open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+            menudata === "Dashboard" ? { backgroundColor: "rgb(143,143,143)", color: "rgb(255,121,0)", fontWeight: 'bold' } : null,
+            ]}
+            onClick={() => setMenuData("Dashboard")}
+          >
+            <ListItemIcon
+              sx={[
+              { minWidth: 0, justifyContent: 'center' },
+              open ? { mr: 3 } : { mr: 'auto' },
+              menudata === "Dashboard" ? { color: "rgb(255,121,0)" } : null,
+              ]}
+            >
+              <DashboardIcon sx={{ color:"rgb(255,121,0)"}}/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Dashboard"
+              sx={[open ? { opacity: 1, fontWeight: 'bold' } : { opacity: 0, fontWeight: 'bold' }]}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            sx={[
+            { minHeight: 48, px: 2.5 },
+            open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+            menudata === "Employes" ? { backgroundColor: "rgb(143,143,143)", color: "rgb(255,121,0)", fontWeight: 'bold' } : null,
+            ]}
+            onClick={() => setMenuData("Employes")}
+          >
+            <ListItemIcon
+              sx={[
+              { minWidth: 0, justifyContent: 'center' },
+              open ? { mr: 3 } : { mr: 'auto' },
+              menudata === "Employes" ? { color: "rgb(255,121,0)" } : null,
+              ]}
+            >
+              <PersonIcon sx={{ color:"rgb(255,121,0)"}}/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Employés"
+              sx={[open ? { opacity: 1, fontWeight: 'bold' } : { opacity: 0, fontWeight: 'bold' }]}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            sx={[
+            { minHeight: 48, px: 2.5 },
+            open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+            menudata === "Embauches" ? { backgroundColor: "rgb(143,143,143)", color: "rgb(255,121,0)", fontWeight: 'bold' } : null,
+            ]}
+            onClick={() => setMenuData("Embauches")}
+          >
+            <ListItemIcon
+              sx={[
+              { minWidth: 0, justifyContent: 'center' },
+              open ? { mr: 3 } : { mr: 'auto' },
+              menudata === "Embauches" ? { color: "rgb(255,121,0)" } : null,
+              ]}
+            >
+              <BadgeIcon sx={{ color:"rgb(255,121,0)"}}/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Embauches"
+              sx={[open ? { opacity: 1, fontWeight: 'bold' } : { opacity: 0, fontWeight: 'bold' }]}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            sx={[
+            { minHeight: 48, px: 2.5 },
+            open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+            menudata === "Debauches" ? { backgroundColor: "rgb(143,143,143)", color: "rgb(255,121,0)", fontWeight: 'bold' } : null,
+            ]}
+            onClick={() => setMenuData("Debauches")}
+          >
+            <ListItemIcon
+              sx={[
+              { minWidth: 0, justifyContent: 'center' },
+              open ? { mr: 3 } : { mr: 'auto' },
+              menudata === "Debauches" ? { color: "rgb(255,121,0)" } : null,
+              ]}
+            >
+              <ExitToAppIcon sx={{ color:"rgb(255,121,0)"}}/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Debauches"
+              sx={[open ? { opacity: 1, fontWeight: 'bold' } : { opacity: 0, fontWeight: 'bold' }]}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            sx={[
+            { minHeight: 48, px: 2.5 },
+            open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+            menudata === "PageImport" ? { backgroundColor: "rgb(143,143,143)", color: "rgb(255,121,0)", fontWeight: 'bold' } : null,
+            ]}
+            onClick={() => setMenuData("PageImport")}
+          >
+            <ListItemIcon
+              sx={[
+              { minWidth: 0, justifyContent: 'center' },
+              open ? { mr: 3 } : { mr: 'auto' },
+              menudata === "PageImport" ? { color: "rgb(255,121,0)" } : null,
+              ]}
+            >
+              <CloudUploadIcon sx={{ color:"rgb(255,121,0)"}}/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Importées les données"
+              sx={[open ? { opacity: 1, fontWeight: 'bold' } : { opacity: 0, fontWeight: 'bold' }]}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            sx={[
+            { minHeight: 48, px: 2.5 },
+            open ? { justifyContent: 'initial' } : { justifyContent: 'center' },
+            menudata === "Historique" ? { backgroundColor: "rgb(143,143,143)", color: "rgb(255,121,0)", fontWeight: 'bold' } : null,
+            ]}
+            onClick={() => setMenuData("Historique")}
+          >
+            <ListItemIcon
+              sx={[
+              { minWidth: 0, justifyContent: 'center' },
+              open ? { mr: 3 } : { mr: 'auto' },
+              menudata === "Historique" ? { color: "rgb(255,121,0)" } : null,
+              ]}
+            >
+              <HistoryIcon sx={{ color:"rgb(255,121,0)"}}/>
+            </ListItemIcon>
+            <ListItemText
+              primary="Historiques"
+              sx={[open ? { opacity: 1, fontWeight: 'bold' } : { opacity: 0, fontWeight: 'bold' }]}
+            />
+          </ListItemButton>
+        </ListItem>
         </List>
       </Drawer>
 
