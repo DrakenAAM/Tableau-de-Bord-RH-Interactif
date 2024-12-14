@@ -1,18 +1,68 @@
 import React, { useState } from 'react';
-import { Box, Card, CardContent, Button, Typography, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Card, CardContent, Button, Typography, Grid, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import axios from 'axios';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 function PageImport() {
     const [openModal, setOpenModal] = useState(null);
+    const [file, setFile] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState({ type: '', text: '' });
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [uploadUrl, setUploadUrl] = useState('');
 
     // Fonction pour ouvrir le modal
-    const handleOpenModal = (modalType) => {
+    const handleOpenModal = (modalType, url) => {
         setOpenModal(modalType);
+        setUploadUrl(url); // Mettre à jour l'URL de l'importation
     };
 
     // Fonction pour fermer le modal
     const handleCloseModal = () => {
         setOpenModal(null);
+    };
+
+    // Fonction pour gérer le changement de fichier
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    // Fonction pour gérer l'importation du fichier
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!file) {
+            setMessage({ type: 'error', text: "Veuillez sélectionner un fichier à importer." });
+            setOpenSnackbar(true);
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        setLoading(true);
+
+        try {
+            await axios.post(uploadUrl, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,  // Ajouter le token si nécessaire
+                },
+            });
+            setLoading(false);
+            setMessage({ type: 'success', text: "Importation du fichier réussie !" });
+            setOpenSnackbar(true);
+            handleCloseModal(); // Fermer le modal après l'importation réussie
+        } catch (error) {
+            setLoading(false);
+            setMessage({ type: 'error', text: "Erreur lors de l'importation du fichier." });
+            setOpenSnackbar(true);
+        }
+    };
+
+    // Fonction pour fermer le snackbar
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
     };
 
     return (
@@ -40,7 +90,7 @@ function PageImport() {
                             <Button
                                 variant="contained"
                                 sx={{ backgroundColor: '#FF9800', color: 'white', '&:hover': { backgroundColor: '#E65100' } }}
-                                onClick={() => handleOpenModal('employes')}
+                                onClick={() => handleOpenModal('employes', 'http://localhost:8000/api/upload_employers/')}
                             >
                                 Importer
                             </Button>
@@ -48,7 +98,7 @@ function PageImport() {
                     </Card>
                 </Grid>
 
-                {/* Card 2: Importer les données embauchés */}
+                {/* Card 2: Importer les données embauches */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Card sx={{ backgroundColor: '#FFF3E0', boxShadow: 3 }}>
                         <CardContent sx={{ textAlign: 'center' }}>
@@ -57,12 +107,12 @@ function PageImport() {
                                 variant="h6"
                                 sx={{ marginY: 2, color: '#FF5722', fontWeight: 'bold' }}
                             >
-                                Importer les données embauchés
+                                Importer les données embauches
                             </Typography>
                             <Button
                                 variant="contained"
                                 sx={{ backgroundColor: '#FF9800', color: 'white', '&:hover': { backgroundColor: '#E65100' } }}
-                                onClick={() => handleOpenModal('embauches')}
+                                onClick={() => handleOpenModal('embauches', 'http://localhost:8000/api/upload_embauches/')}
                             >
                                 Importer
                             </Button>
@@ -70,7 +120,7 @@ function PageImport() {
                     </Card>
                 </Grid>
 
-                {/* Card 3: Importer les données débauchés */}
+                {/* Card 3: Importer les données débauches */}
                 <Grid item xs={12} sm={6} md={4}>
                     <Card sx={{ backgroundColor: '#FFF3E0', boxShadow: 3 }}>
                         <CardContent sx={{ textAlign: 'center' }}>
@@ -79,12 +129,12 @@ function PageImport() {
                                 variant="h6"
                                 sx={{ marginY: 2, color: '#FF5722', fontWeight: 'bold' }}
                             >
-                                Importer les données débauchés
+                                Importer les données débauches
                             </Typography>
                             <Button
                                 variant="contained"
                                 sx={{ backgroundColor: '#FF9800', color: 'white', '&:hover': { backgroundColor: '#E65100' } }}
-                                onClick={() => handleOpenModal('debauches')}
+                                onClick={() => handleOpenModal('debauches', 'http://localhost:8000/api/upload_debauches/')}
                             >
                                 Importer
                             </Button>
@@ -97,27 +147,57 @@ function PageImport() {
             <Dialog open={Boolean(openModal)} onClose={handleCloseModal} fullWidth maxWidth="sm">
                 <DialogTitle>
                     {openModal === 'employes' && 'Importer les données employés'}
-                    {openModal === 'embauches' && 'Importer les données embauchés'}
-                    {openModal === 'debauches' && 'Importer les données débauchés'}
+                    {openModal === 'embauches' && 'Importer les données embauches'}
+                    {openModal === 'debauches' && 'Importer les données débauches'}
                 </DialogTitle>
                 <DialogContent>
                     <Typography>
                         Ici, vous pouvez télécharger votre fichier pour {openModal}.
                     </Typography>
-                    <input type="file" accept=".csv" />
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileChange}
+                            style={{ marginBottom: '20px' }}
+                        />
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            startIcon={<CloudUploadIcon />}
+                            sx={{
+                                backgroundColor: '#FF9800',
+                                color: 'white',
+                                '&:hover': { backgroundColor: '#E65100' },
+                            }}
+                            disabled={loading}
+                        >
+                            {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Importer"}
+                        </Button>
+                    </form>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal} sx={{ color: '#FF5722' }}>
                         Annuler
                     </Button>
-                    <Button
-                        variant="contained"
-                        sx={{ backgroundColor: '#FF9800', color: 'white', '&:hover': { backgroundColor: '#E65100' } }}
-                    >
-                        Importer
-                    </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Snackbar pour afficher les messages de succès ou d'erreur */}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={4000}
+                onClose={handleCloseSnackbar}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={message.type}
+                    sx={{ width: '100%' }}
+                >
+                    {message.text}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

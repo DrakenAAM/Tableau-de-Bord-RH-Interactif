@@ -296,7 +296,7 @@ class RegisterView(APIView):
         return Response({"message": "Creation d'utilisateur est un succés"}, status=201)
 # Authentification
 class LoginView(APIView):
-    permision_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         username = request.data.get("username")
