@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Snackbar, IconButton, Grid, Alert } from '@mui/material';
 import { AccountCircle, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import logo from '../icons/orange.png'; // Ajustez le chemin si nécessaire
 
@@ -14,7 +14,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const handleLogin = async () => {
     // Réinitialiser les erreurs
@@ -36,12 +36,17 @@ const Login = () => {
         username,
         password,
       });
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('userId', response.data.userId);
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/home');
-      }, 2000);
+
+      const { access, refresh } = response.data;
+
+      // Stockage sécurisé des tokens
+      localStorage.setItem('access_token', access);
+      localStorage.setItem('refresh_token', refresh);
+      window.location.href = '/home';
+      //setSuccess(true);
+      //setTimeout(() => {
+        //navigate('/home');
+      //}, 2000);
     } catch (err) {
       if (err.response?.status === 401) {
         setError('Nom d\'utilisateur ou mot de passe incorrect.');
@@ -154,5 +159,3 @@ const Login = () => {
 };
 
 export default Login;
-
-

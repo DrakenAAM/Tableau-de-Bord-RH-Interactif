@@ -16,83 +16,102 @@ import { frFR } from '@mui/material/locale'; // Pour traduire en français
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const Employer = () => {
-    const [employer, setEmployer] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [page, setPage] = useState(0); // Page actuelle
-    const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [employer, setEmployer] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(0); // Page actuelle
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        axios
-          .get('http://localhost:8000/api/debauches/')
-          .then((response) => {
-            setEmployer(response.data);
-            setFilteredData(response.data); // Initialiser les données filtrées avec toutes les données
-          })
-          .catch((error) =>
-            console.error('Erreur lors de la récupération des données', error)
-          );
-      }, []);
+  useEffect(() => {
+    const fetchEmployers = async () => {
+      try {
+        // Récupérer le token depuis le localStorage ou une autre source
+        const token = localStorage.getItem('access_token'); 
 
-    const handleSearch = (event) => {
-        const value = event.target.value.toLowerCase();
-        setSearchTerm(value);
-        const filtered = employer.filter((item) =>
-          Object.values(item).some(
-            (val) => val && val.toString().toLowerCase().includes(value)
-          )
+        // Ajouter le token dans l'en-tête Authorization
+        const response = await axios.get('http://localhost:8000/api/debauches/', {
+          headers: {
+            Authorization: `Bearer ${token}`, // Ajout de l'en-tête Authorization
+          },
+        });
+
+        setEmployer(response.data);
+        setFilteredData(response.data); // Initialiser les données filtrées avec toutes les données
+      } catch (err) {
+        console.error('Erreur lors de la récupération des données', err);
+        setError(
+          err.response && err.response.status === 403
+            ? "Accès interdit. Vous n'êtes pas autorisé à consulter ces données."
+            : 'Une erreur est survenue. Veuillez réessayer plus tard.'
         );
-        setFilteredData(filtered);
-        setPage(0); // Réinitialiser à la première page après un filtrage
-      };
-    
-      // Gérer le changement de page
-      const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-      };
-    
-      // Gérer le changement du nombre de lignes par page
-      const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0); // Réinitialiser à la première page
-      };
-    
-      // Déterminer les données à afficher sur la page actuelle
-      const paginatedData = filteredData.slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      );
-    
-      // Créer un thème personnalisé pour la pagination en français
-      const theme = createTheme(frFR);
+      }
+    };
 
-    return (
-        <Box>
-          <div style={{ padding: '20px' }}>
-            <ThemeProvider theme={theme}>
-      
-              <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
-                <h1 style={{ color: 'orange' }}>Liste des débauches</h1>
+    fetchEmployers();
+  }, []);
 
-                   {/* Champs de recherche */}
-                  <Box display="flex" gap={2} marginBottom={2}  padding={'20px'}>
-                    <TextField
-                      label="Recherche multicritères"
-                      variant="outlined"
-                      fullWidth
-                      value={searchTerm}
-                      onChange={handleSearch}
-                      sx={{
-                        input: { color: 'orange' },
-                        label: { color: 'orange' },
-                        '& .MuiOutlinedInput-root': {
-                          '& fieldset': { borderColor: 'orange' },
-                          '&:hover fieldset': { borderColor: 'orange' },
-                          '&.Mui-focused fieldset': { borderColor: 'orange' },
-                        },
-                      }}
-                    />
-                  </Box>
+  const handleSearch = (event) => {
+    const value = event.target.value.toLowerCase();
+    setSearchTerm(value);
+    const filtered = employer.filter((item) =>
+      Object.values(item).some(
+        (val) => val && val.toString().toLowerCase().includes(value)
+      )
+    );
+    setFilteredData(filtered);
+    setPage(0); // Réinitialiser à la première page après un filtrage
+  };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const paginatedData = filteredData.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const theme = createTheme(frFR);
+
+  return (
+    <Box>
+      <div style={{ padding: '20px' }}>
+        <ThemeProvider theme={theme}>
+          <Paper elevation={3} sx={{ marginBottom: 5, padding: 2 }}>
+            <h1 style={{ color: 'orange' }}>Liste des débauches</h1>
+
+            {/* Message d'erreur si accès refusé */}
+            {error && (
+              <div style={{ color: 'red', marginBottom: '20px' }}>
+                {error}
+              </div>
+            )}
+
+            {/* Champs de recherche */}
+            <Box display="flex" gap={2} marginBottom={2} padding={'20px'}>
+              <TextField
+                label="Recherche multicritères"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={handleSearch}
+                sx={{
+                  input: { color: 'orange' },
+                  label: { color: 'orange' },
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': { borderColor: 'orange' },
+                    '&:hover fieldset': { borderColor: 'orange' },
+                    '&.Mui-focused fieldset': { borderColor: 'orange' },
+                  },
+                }}
+              />
+            </Box>
 
             {/* Tableau */}
             <TableContainer
@@ -163,12 +182,10 @@ const Employer = () => {
               labelRowsPerPage="Lignes par page :"
             />
           </Paper>
-        
-      
-    </ThemeProvider>
-    </div>
+        </ThemeProvider>
+      </div>
     </Box>
-    );
+  );
 };
 
 export default Employer;

@@ -10,82 +10,119 @@ from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
+#from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, permission_classes
 
 #importation des données employer
-class ImportDataEmployer(APIView):
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+
+class ImportDataEmployer(APIView): 
+    @staticmethod
     def convertir_date(date_str):
-        return datetime.datetime.strptime(date_str, "%d/%m/%Y").strftime("%Y-%m-%d")
-        
+        """
+        Convertit une date au format "dd/mm/yyyy" en format "yyyy-mm-dd".
+        """
+        try:
+            return datetime.datetime.strptime(date_str, "%d/%m/%Y").strftime("%Y-%m-%d")
+        except ValueError:
+            raise ValueError(f"Format de date invalide : {date_str}. Attendu : jj/mm/aaaa")
+
     def post(self, request, *args, **kwargs):
-        file = request.FILES.get('file')
-        user = request.user # L'utilisateur connecté
+        file = request.FILES.get('file')  # Récupération du fichier
         print("Fichier reçu")
+
+        # Vérification si un fichier est bien reçu
         if not file:
             print("Le fichier n'a pas été importé")
-            return Response({"error": "Le fichier n'a pas été impotré"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Le fichier n'a pas été importé"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             print("Lecture du fichier CSV")
-            content = file.read().decode('utf-8-sig')
-            csv_file = csv.reader(content.splitlines(), delimiter=';')
-            nombre_col = 12
+            content = file.read().decode('utf-8-sig')  # Décodage pour UTF-8 avec BOM
+            csv_file = csv.reader(content.splitlines(), delimiter=';')  # Lecture du CSV
+            nombre_col = 12  # Nombre attendu de colonnes
 
+            # Itération sur chaque ligne du fichier CSV
             for row in csv_file:
                 print("Ligne lue :", row)
 
+                # Vérification si la ligne est valide
                 if not row or len(row) != nombre_col:
                     print("Erreur : Format de ligne invalide")
-                    #return Response({"error": "Format invalide"}, status=status.HTTP_400_BAD_REQUEST)
+                    continue  # Ignore cette ligne et continue
+
+                # Extraction et nettoyage des données
+                matricule, trigramme, sexe, embauche, contrat, naissance, age, direction, classification, metier, ville, entite = (
+                    row[0].strip(), row[1].strip(), row[2].strip(), row[3].strip(),
+                    row[4].strip(), row[5].strip(), row[6].strip(), row[7].strip(),
+                    row[8].strip(), row[9].strip(), row[10].strip(), row[11].strip()
+                )
+
+                # Vérification du type pour "matricule"
+                try:
+                    matricule = int(matricule)
+                except ValueError:
+                    print(f"Erreur : Matricule invalide -> {matricule}")
                     continue
 
-                matricule, trigramme, sexe, embauche, contrat, naissance, age, direction, classification, metier, ville, entite = row[0].strip(), row[1].strip(), row[2].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[6].strip(), row[7].strip(),row[8].strip(), row[9].strip(), row[10].strip(), row[11].strip()
-
+                # Conversion des dates
                 try:
-                    matricule= int(matricule)
-                except ValueError:
-                    print("Erreur : Age non valide", row)
-                    return Response({"error": "L'age doit etre un entier {row}"}, status=status.HTTP_400_BAD_REQUEST)
-                
-                embauche = ImportDataEmployer.convertir_date(embauche)
-                naissance = ImportDataEmployer.convertir_date(naissance)
+                    embauche = self.convertir_date(embauche)
+                    naissance = self.convertir_date(naissance)
+                except ValueError as e:
+                    print(e)
+                    continue
 
+                # Vérification des doublons sur la colonne matricule
                 if Employer.objects.filter(matricule=matricule).exists():
                     print(f"Doublon trouvé pour la matricule {matricule}, enregistrement ignoré.")
                     continue
-                    
-                employer =  Employer(
+
+                # Création de l'objet Employer
+                employer = Employer(
                     matricule=matricule,
                     trigramme=trigramme,
-                    sexe=sexe, 
-                    embauche=embauche, 
-                    contrat=contrat, 
-                    naissance=naissance, 
-                    age=age, 
-                    direction=direction, 
-                    classification=classification, 
-                    metier=metier, 
-                    ville=ville, 
+                    sexe=sexe,
+                    embauche=embauche,
+                    contrat=contrat,
+                    naissance=naissance,
+                    age=age,
+                    direction=direction,
+                    classification=classification,
+                    metier=metier,
+                    ville=ville,
                     entite=entite
-                     )
+                )
                 employer.save()
-                print(f"Data employer sauvegardée : {matricule}, {trigramme}")
-              # Enregistrement dans l'historique
+                print(f"Données employé sauvegardées : {matricule}, {trigramme}")
+
+            # Vérification de l'utilisateur (anonyme ou authentifié)
+            user = request.user if request.user.is_authenticated else None  # Utilisateur anonyme ou authentifié
+
+            # Enregistrement dans l'historique d'importation
             ImportHistory.objects.create(
                 file_name=file.name,
                 import_type="Employer",
-                imported_by=request.user,
-                success=True,
+                imported_by=user,  # Peut être None si anonyme
+                success=True
             )
-            return Response({"message": "Fichier traité avec succees"}, status=status.HTTP_201_CREATED)
 
+            return Response({"message": "Fichier traité avec succès"}, status=status.HTTP_201_CREATED)
+
+        # Gestion des erreurs spécifiques
         except IndexError:
             print("Erreur : Format du fichier incorrect")
-            return Response({"error": "Format du fichier est incorrecte"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Format du fichier est incorrect"}, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
-            print("Erreur inattendub :", str(e))
+            print("Erreur inattendue :", str(e))
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 #Affiche liste Employer
 class EmployerListView(APIView):
@@ -302,14 +339,22 @@ class LoginView(APIView):
         username = request.data.get("username")
         password = request.data.get("password")
 
+        if not username or not password:
+            return Response({"message": "Nom d'utilisateur et mot de passe sont requis."}, status=400)
+
+        # Recherche de l'utilisateur
         user = User.objects.filter(username=username).first()
+
         if user is None or not user.check_password(password):
-            return Response ({"message": "Identificattion invalide"}, status=400)
-        
+            return Response({"message": "Identifiants invalides."}, status=401)
+
+        # Création des tokens
         refresh = RefreshToken.for_user(user)
+        
+        # Retourner les tokens
         return Response({
-            "refresh": str(refresh),
             "access": str(refresh.access_token),
+            "refresh": str(refresh),
         })
 # liste des utilisateur
 class UserListView(APIView):
@@ -346,16 +391,21 @@ class UserListView(APIView):
         except User.DoesNotExist:
             return Response({"message": "Utilisateur introuvable"}, status=status.HTTP_404_NOT_FOUND)
 class ImportHistoryView(APIView):
+    permission_classes = [AllowAny]  # Permet l'accès à tous, y compris les utilisateurs anonymes
+
     def get(self, request, *args, **kwargs):
-        history = ImportHistory.objects.all().order_by('-import_date')
+        # Récupérer l'historique des importations
+        history = ImportHistory.objects.all()
+
         data = [
             {
-                "file_name": record.file_name,
-                "import_type": record.import_type,
-                "imported_by": record.imported_by.username,
-                "import_date": record.import_date.strftime("%Y-%m-%d %H:%M:%S"),
-                "success": record.success,
+                'file_name': entry.file_name,
+                'import_type': entry.import_type,
+                'imported_by': entry.imported_by.username if entry.imported_by else 'Rakoto',
+                'import_date': entry.import_date.strftime('%d/%m/%Y %H:%M:%S'),  # Format lisible
+                'success': entry.success,
             }
-            for record in history
+            for entry in history
         ]
+
         return Response(data)

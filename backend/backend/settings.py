@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -58,10 +59,18 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
+CORS_ALLOW_HEADERS = [
+    "Authorization",  # Permet l'envoi des en-têtes Authorization
+    "Content-Type",
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTIFICATION_CLASSES': (
-        'rest_framework_simplejwt.authentification.JWTAuthentification',
+        #'rest_framework.authentication.SessionAuthentication',
+        #'rest_framework.authentication.TokenAuthentication',  # Pour Token-based
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    
 }
 
 CORS_ALLOW_ALL_ORIGINS = True

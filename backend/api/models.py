@@ -59,7 +59,7 @@ class Debauche(models.Model):
 class ImportHistory(models.Model):
     file_name = models.CharField(max_length=255)  # Nom du fichier importé
     import_type = models.CharField(max_length=50)  # Type de données : Employer, Embauche, Débauche
-    imported_by = models.ForeignKey(User, on_delete=models.CASCADE)  # Utilisateur ayant importé le fichier
+    imported_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     import_date = models.DateTimeField(auto_now_add=True)  # Date d'importation
     success = models.BooleanField(default=True) # Indique si l'importation a réussi
 

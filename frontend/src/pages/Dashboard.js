@@ -46,8 +46,21 @@ function Dashboard() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('token'); // Récupérer le token depuis localStorage
+
+    if (!token) {
+        console.error('Token non trouvé. Veuillez vous connecter.');
+        return;
+    }
     // Appel de l'API pour récupérer les totaux
-    fetch('http://127.0.0.1:8000/api/effectifs/')
+    fetch('http://127.0.0.1:8000/api/effectifs/',
+    {
+      method: 'GET',
+      headers: {
+          'Authorization': `Bearer ${token}`, // Ajouter le token pour l'autorisation
+          'Content-Type': 'application/json', // Optionnel, mais utile pour indiquer le type de contenu
+      },
+  })
       .then((response) => response.json())
       .then((data) => setTotals(data))
       .catch((error) => console.error('Erreur lors de la récupération des totaux:', error));

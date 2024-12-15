@@ -34,9 +34,9 @@ function PageImport() {
         const token = localStorage.getItem('token');
         
         // Vérification de la présence du token
+        //const token = localStorage.getItem('access'); // Récupère le token depuis le stockage local
         if (!token) {
-            setMessage({ type: 'error', text: 'Vous devez être connecté pour importer des données.' });
-            setOpenSnackbar(true);
+            console.error("Token manquant");
             return;
         }
 
