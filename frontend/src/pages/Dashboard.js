@@ -6,9 +6,10 @@ import Paper from '@mui/material/Paper';
 import CountUp from 'react-countup';
 import BadgeIcon from '@mui/icons-material/Badge';
 import GroupsIcon from '@mui/icons-material/Groups';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(ChartDataLabels);
 
 function Dashboard() {
   const [totals, setTotals] = useState({
@@ -22,6 +23,12 @@ function Dashboard() {
     femme: 50,
   });
 
+  const [directionData, setDirectionData] = useState({
+    labels: [],
+    hommes: [],
+    femmes: [],
+  });
+
   // Données pour le graphique circulaire
   const pieData = {
     labels: ['Hommes', 'Femmes'],
@@ -30,6 +37,22 @@ function Dashboard() {
         data: [sexeData.homme, sexeData.femme],
         backgroundColor: ['rgb(75,180,230)', 'rgb(255,180,230)'],
         hoverBackgroundColor: ['rgb(75,180,230)', 'rgb(255,180,230)'],
+      },
+    ],
+  };
+
+  const barDirectionData = {
+    labels: directionData.labels,
+    datasets: [
+      {
+        label: 'Hommes',
+        data: directionData.hommes,
+        backgroundColor: 'rgb(75,180,230)',
+      },
+      {
+        label: 'Femmes',
+        data: directionData.femmes,
+        backgroundColor: 'rgb(255,180,230)',
       },
     ],
   };
@@ -45,8 +68,44 @@ function Dashboard() {
       },
     ],
   };
+  const options = {
+    responsive: true,
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (tooltipItem) => {
+            const total = sexeData.homme + sexeData.femme;
+            const value = tooltipItem.raw;
+            const percentage = ((value / total) * 100).toFixed(2);
+            return `${tooltipItem.label}: ${percentage}%`;
+          },
+        },
+      },
+      datalabels: {
+        formatter: (value, context) => {
+          const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+          const percentage = ((value / total) * 100).toFixed(2);
+          return `${percentage}%`;
+        },
+        color: 'black',
+        font: {
+          weight: 'bold',
+          size: 14,
+        },
+        align: 'center',
+        anchor: 'center',
+      },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+      },
+    },
+  };
+  
 
   useEffect(() => {
+
     const token = localStorage.getItem('token'); // Récupérer le token depuis localStorage
 
     if (!token) {
@@ -54,14 +113,7 @@ function Dashboard() {
         return;
     }
     // Appel de l'API pour récupérer les totaux
-    fetch('http://127.0.0.1:8000/api/effectifs/',
-    {
-      method: 'GET',
-      headers: {
-          'Authorization': `Bearer ${token}`, // Ajouter le token pour l'autorisation
-          'Content-Type': 'application/json', // Optionnel, mais utile pour indiquer le type de contenu
-      },
-  })
+    fetch('http://127.0.0.1:8000/api/effectifs/')
       .then((response) => response.json())
       .then((data) => setTotals(data))
       .catch((error) => console.error('Erreur lors de la récupération des totaux:', error));
@@ -71,6 +123,24 @@ function Dashboard() {
       .then((response) => response.json())
       .then((data) => setSexeData(data))
       .catch((error) => console.error('Erreur lors de la récupération des données:', error));
+
+    // Appel de l'API pour la répartition par direction
+    fetch('http://localhost:8000/api/par_direction/', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const labels = data.map((item) => item.direction);
+        const hommes = data.map((item) => item.hommes);
+        const femmes = data.map((item) => item.femmes);
+
+        setDirectionData({ labels, hommes, femmes });
+      })
+      .catch((error) => console.error('Erreur lors de la récupération des données par direction:', error));
   }, []);
 
   return (
@@ -92,7 +162,7 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}> <GroupsIcon style={{ fontSize: '40px'}} /> Total des employés actuel</h2>
+              <h2> <GroupsIcon/> Total des employés actuel</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_employes} duration={1.5} />
               </p>
@@ -109,7 +179,7 @@ function Dashboard() {
               }}
             >
               
-              <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}> <BadgeIcon style={{ fontSize: '40px'}} /> Embauchés</h2>
+              <h2> <BadgeIcon/> Embauchés</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_embauches} duration={1.5} />
               </p>
@@ -125,7 +195,7 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2> <ExitToAppIcon style={{ fontSize: '40px', verticalAlign: 'middle' }} /> Débauchés</h2>
+              <h2>Débauchés</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_debauches} duration={1.5} />
               </p>
@@ -181,6 +251,23 @@ function Dashboard() {
               <h2 style={{ color: 'orange' }}>Comparaison Embauche/Débauche</h2>
               <div style={{ width: '400px', height: '400px', margin: '0 auto' }}>
                 <Bar data={barData} />
+              </div>
+            </Paper>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '40px' }}>
+          <Paper
+              elevation={3}
+              style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                flex: '1',
+                margin: '10px',
+                textAlign: 'center',
+              }}
+            >
+              <h2 style={{ color: 'orange' }}>Répartition Hommes/Femmes par Direction</h2>
+              <div style={{ width: '600px', height: '400px', margin: '0 auto' }}>
+                <Bar data={barDirectionData} options={options}/>
               </div>
             </Paper>
           </div>

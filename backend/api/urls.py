@@ -10,6 +10,7 @@ urlpatterns=[
     path('debauches/', DebaucheListView.as_view(), name='debauche-list'),
     path('effectifs/', TotalsEffectifView.as_view(), name="effectifs"),
     path('repartition/', RepartionSexe.as_view(), name="Repartition-sexe"),
+    path('par_direction/', RepartitionSexeParDirection.as_view(), name="Repartition-sexe-par-direction"),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     path('users/', UserListView.as_view(), name='user-list'),

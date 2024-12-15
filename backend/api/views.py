@@ -334,7 +334,30 @@ class RepartionSexe(APIView):
             "femme": pourcentage_femmes,
         }
         return Response(data)
+from django.db.models import Count, Case, When
 
+class RepartitionSexeParDirection(APIView):
+    def get(self, request):
+        # Regrouper les données par direction et sexe
+        directions = Employer.objects.values('direction').annotate(
+            hommes=Count(Case(When(sexe="Homme", then=1))),
+            femmes=Count(Case(When(sexe="Femme", then=1))),
+        )
+
+        # Construire la réponse
+        response_data = []
+        for direction in directions:
+            total = direction['hommes'] + direction['femmes']
+            pourcentage_hommes = (direction['hommes'] / total * 100) if total > 0 else 0
+            pourcentage_femmes = (direction['femmes'] / total * 100) if total > 0 else 0
+
+            response_data.append({
+                "direction": direction['direction'],
+                "hommes": pourcentage_hommes,
+                "femmes": pourcentage_femmes,
+            })
+
+        return Response(response_data)
 # s'inscire
 class RegisterView(APIView):
     permission_classes = [AllowAny]
