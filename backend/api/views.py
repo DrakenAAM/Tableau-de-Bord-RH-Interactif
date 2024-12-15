@@ -12,11 +12,7 @@ from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
-#from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, permission_classes
-
-#importation des données employer
-from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -107,7 +103,7 @@ class ImportDataEmployer(APIView):
             # Enregistrement dans l'historique d'importation
             ImportHistory.objects.create(
                 file_name=file.name,
-                import_type="Employer",
+                import_type="Données Employés",
                 imported_by=user,  # Peut être None si anonyme
                 success=True
             )
@@ -190,7 +186,18 @@ class ImportDataEmbauche(APIView):
                     )
                 embauche.save()
                 print("Data employer sauvegardée : {matricule}, {trigramme}")
-            return Response({"message": "Fichier traité avec succees"}, status=status.HTTP_201_CREATED)
+            user = request.user if request.user.is_authenticated else None  # Utilisateur anonyme ou authentifié
+
+            # Enregistrement dans l'historique d'importation
+            ImportHistory.objects.create(
+                file_name=file.name,
+                import_type="Données Embauches",
+                imported_by=user,  # Peut être None si anonyme
+                success=True
+                )
+
+            return Response({"message": "Fichier traité avec succès"}, status=status.HTTP_201_CREATED)
+                
         except IndexError:
             print("Erreur : Format du fichier incorrect")
             return Response({"error": "Format du fichier est incorrecte"}, status=status.HTTP_400_BAD_REQUEST)
@@ -274,6 +281,15 @@ class ImportDataDebauche(APIView):
                     print(f"Le matricule {matricule} n'existe pas dans Employer, aucun action n'a été prise")
                 
                 print("Data debauche sauvegardée : {matricule}, {trigramme}")
+            user = request.user if request.user.is_authenticated else None  # Utilisateur anonyme ou authentifié
+
+            # Enregistrement dans l'historique d'importation
+            ImportHistory.objects.create(
+                file_name=file.name,
+                import_type="Données Débauches",
+                imported_by=user,  # Peut être None si anonyme
+                success=True
+                )
             return Response({"message": "Fichier traité avec succees"}, status=status.HTTP_201_CREATED)
         except IndexError:
             print("Erreur : Format du fichier incorrect")
@@ -358,7 +374,7 @@ class LoginView(APIView):
         })
 # liste des utilisateur
 class UserListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
         users = User.objects.all()

@@ -6,6 +6,7 @@ import Paper from '@mui/material/Paper';
 import CountUp from 'react-countup';
 import BadgeIcon from '@mui/icons-material/Badge';
 import GroupsIcon from '@mui/icons-material/Groups';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -91,7 +92,7 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2> <GroupsIcon/> Total des employés actuel</h2>
+              <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}> <GroupsIcon style={{ fontSize: '40px'}} /> Total des employés actuel</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_employes} duration={1.5} />
               </p>
@@ -108,7 +109,7 @@ function Dashboard() {
               }}
             >
               
-              <h2> <BadgeIcon/> Embauchés</h2>
+              <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}> <BadgeIcon style={{ fontSize: '40px'}} /> Embauchés</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_embauches} duration={1.5} />
               </p>
@@ -124,7 +125,7 @@ function Dashboard() {
                 margin: '10px',
               }}
             >
-              <h2>Débauchés</h2>
+              <h2> <ExitToAppIcon style={{ fontSize: '40px', verticalAlign: 'middle' }} /> Débauchés</h2>
               <p style={{ fontSize: '24px', fontWeight: 'bold' }}>
                 <CountUp start={0} end={totals.total_debauches} duration={1.5} />
               </p>
